@@ -29,12 +29,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(14, 12, 14, 12) }
         val title = TextView(this).apply { text = "TRANSFERX  •  Browser + Transfer Manager"; textSize = 18f }
-        val address = EditText(this).apply { hint = "https://alamat-website.com"; singleLine = true; setText("https://vexfile.com/fileshare#") }
+        val address = EditText(this).apply { hint = "https://alamat-website.com"; setSingleLine(true); setText("https://vexfile.com/fileshare#") }
         val open = Button(this).apply { text = "Buka website"; setOnClickListener { loadAddress(address.text.toString()) } }
-        val downloadUrl = EditText(this).apply { hint = "URL file untuk download (HTTP/HTTPS)"; singleLine = true }
+        val downloadUrl = EditText(this).apply { hint = "URL file untuk download (HTTP/HTTPS)"; setSingleLine(true) }
         val download = Button(this).apply { text = "Download dengan resume"; setOnClickListener { enqueueDownload(downloadUrl.text.toString()) } }
-        val tusUrl = EditText(this).apply { hint = "URL endpoint TUS (server harus mendukung TUS)"; singleLine = true }
-        val tusAuth = EditText(this).apply { hint = "Authorization header (opsional, mis. Bearer …)"; singleLine = true }
+        val tusUrl = EditText(this).apply { hint = "URL endpoint TUS (server harus mendukung TUS)"; setSingleLine(true) }
+        val tusAuth = EditText(this).apply { hint = "Authorization header (opsional, mis. Bearer …)"; setSingleLine(true) }
         val choose = Button(this).apply { text = "Pilih file untuk upload TUS"; setOnClickListener { pickTusFile.launch(arrayOf("*/*")) } }
         val upload = Button(this).apply { text = "Upload resumable (TUS)"; setOnClickListener { enqueueTus(tusUrl.text.toString(), tusAuth.text.toString()) } }
         status = TextView(this).apply { text = "Siap. Download resume via HTTP Range; upload resumable via TUS."; textSize = 13f }
