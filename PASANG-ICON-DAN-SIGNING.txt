@@ -1,0 +1,39 @@
+TRANSFERX: ICON LAUNCHER + SIGNING KONSISTEN
+
+1) ICON LAUNCHER
+Tambahkan atribut berikut di tag <application ...> pada app/src/main/AndroidManifest.xml:
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher"
+Jangan membuat tag <application> baru. Pertahankan atribut lain yang sudah ada.
+
+MainActivity memakai R.drawable.icon; file drawable-nodpi/icon.png juga disertakan.
+
+2) SIGNING KEY PERMANEN
+Buat satu keystore di Termux (sekali saja), simpan aman dan jangan pernah buat ulang untuk versi update:
+    pkg install openjdk-17 -y
+    cd /storage/emulated/0/Download/TransferX
+    keytool -genkeypair -v -keystore transferx-release.jks -alias transferx -keyalg RSA -keysize 2048 -validity 10000
+
+Masukkan password keystore dan key. Simpan baik-baik. Untuk paling sederhana, gunakan password yang sama untuk keduanya. Jangan unggah file .jks ke GitHub.
+
+Tambahkan empat GitHub Actions repository secrets (Settings > Secrets and variables > Actions > New repository secret):
+    SIGNING_KEYSTORE_BASE64 = isi base64 dari file JKS
+    SIGNING_STORE_PASSWORD = password keystore
+    SIGNING_KEY_ALIAS = transferx
+    SIGNING_KEY_PASSWORD = password key
+
+Untuk mengisi secret base64 dari Termux tanpa menampilkan nilainya:
+    base64 transferx-release.jks | tr -d '\n' | gh secret set SIGNING_KEYSTORE_BASE64
+
+Tiga secret password/alias bisa dibuat lewat gh secret set, misalnya:
+    printf '%s' 'PASSWORD_PEAN' | gh secret set SIGNING_STORE_PASSWORD
+    printf '%s' 'transferx' | gh secret set SIGNING_KEY_ALIAS
+    printf '%s' 'PASSWORD_KEY_PEAN' | gh secret set SIGNING_KEY_PASSWORD
+Ganti PASSWORD_PEAN dengan password yang pean pilih. Jangan kirim password ke chat.
+
+3) BUILD
+Push biasa ke main/master menghasilkan debug APK artifact.
+Push tag v0.1.1 menghasilkan release APK bertanda tangan permanen, artifact, dan GitHub Release.
+
+PENTING TENTANG BUILD LAMA
+Build lama yang dibuat oleh GitHub Actions memakai debug keystore sementara milik runner. Kunci itu tidak disimpan, jadi APK release pertama dengan keystore baru TIDAK bisa menimpa/memperbarui APK debug lama. Uninstall TransferX lama sekali, lalu install APK release pertama. Setelah itu semua versi release berikutnya dapat update normal selama file JKS dan password yang sama dipakai. Jangan hilangkan/ubah keystore tersebut.

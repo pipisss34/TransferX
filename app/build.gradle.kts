@@ -1,8 +1,12 @@
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val releaseStoreFile = System.getenv("TRANSFERX_KEYSTORE_FILE")
+val releaseStorePassword = System.getenv("TRANSFERX_STORE_PASSWORD")
+val releaseKeyAlias = System.getenv("TRANSFERX_KEY_ALIAS")
+val releaseKeyPassword = System.getenv("TRANSFERX_KEY_PASSWORD")
 
 android {
     namespace = "id.transferx.app"
@@ -16,14 +20,31 @@ android {
         versionName = "0.1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            if (!releaseStoreFile.isNullOrBlank()) {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("debug") { }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    kotlinOptions { jvmTarget = "17" }
 }
 
 dependencies {
